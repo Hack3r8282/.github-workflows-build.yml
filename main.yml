@@ -1,0 +1,48 @@
+name: Compile My Custom IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create iOS App Skeleton
+        run: |
+          mkdir -p Payload/AutoTouchApp.app
+          cp "Auto touch.lua" Payload/AutoTouchApp.app/
+          
+          cat <<EOF > Payload/AutoTouchApp.app/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>AutoTouchApp</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.hack3r8282.autotouchapp</string>
+              <key>CFBundleName</key>
+              <string>AutoTouchApp</string>
+              <key>CFBundleDisplayName</key>
+              <string>AutoTouch Control</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0.0</string>
+              <key>CFBundleVersion</key>
+              <string>1</string>
+              <key>LSRequiresIPhoneOS</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Package Into IPA File
+        run: zip -r AutoTouchApp.ipa Payload
+
+      - name: Publish Finished App Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Clicker-App-Drop
+          path: AutoTouchApp.ipa
