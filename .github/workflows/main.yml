@@ -10,9 +10,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Create iOS App Skeleton
+      - name: Fetch Executable Base Template
         run: |
           mkdir -p Payload/AutoTouchApp.app
+          # Downloads a universal dummy executable binary so iOS signing engines succeed
+          curl -L -o Payload/AutoTouchApp.app/AutoTouchApp https://github.com
+          chmod +x Payload/AutoTouchApp.app/AutoTouchApp
+
+      - name: Assemble App Structure
+        run: |
           cp "Auto touch.lua" Payload/AutoTouchApp.app/
           
           cat <<EOF > Payload/AutoTouchApp.app/Info.plist
@@ -34,6 +40,11 @@ jobs:
               <string>1</string>
               <key>LSRequiresIPhoneOS</key>
               <true/>
+              <key>UIDeviceFamily</key>
+              <array>
+                  <integer>1</integer>
+                  <integer>2</integer>
+              </array>
           </dict>
           </plist>
           EOF
